@@ -1,0 +1,19 @@
+
+
+
+<li>
+    <article class = "post">
+        <!-- slug = the-mountain -->
+          <a href = "{% url "post_view" post.slug %}">
+            <!-- adding images from dictionary i created in views using filter "add" -->
+            <img src = "{{ post.image.url }}" alt = "{{ post.title }} "/>
+            <div class = "post__content">
+                <!-- accessing dictionary items -->
+            <h3> {{ post.title }} </h3> 
+            <p>
+                {{ post.excerpt }}
+            </p>
+            </div>
+          </a>
+    </article>
+  </li>

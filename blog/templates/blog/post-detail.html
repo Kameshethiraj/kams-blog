@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ post.title }}
+{% endblock title %}
+
+{% block css_files %}
+<link rel = "stylesheet" href = "{% static '/blog/post-detail.css' %}"> 
+
+{% endblock css_files %}
+
+{% block content %}
+
+<!-- error alert -->
+{% if comment_form.errors %}
+<div id="alert">
+    <h2>Saving the comment failed!!!</h2>
+    <p>Please check form below for errors and fix it.</p>
+    <a href="#comment-form">Fix it</a>
+</div>
+{% endif %}
+
+
+<section id="summary">
+<h2> {{ post.title }} </h2>
+<div>
+    {% for tag in post_tags %}
+        <span id="tag">{{ tag.caption }}</span>
+    {% endfor %}
+
+</div>
+
+<!-- read later feature -->
+ <!-- session based button -->
+<div id="read-later">
+    <form action="{% url 'read-later' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" value="{{ post.id }}" name="post_id">
+        <button>
+            {% if is_saved_for_later %}
+            Remove from Read list
+            {% else %}
+            Read Later
+            {% endif %}
+        </button>
+    </form>
+   
+</div>
+
+<article>
+    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+    <address>By <a href = "mailto:{{ post.author.email }}">{{ post.author|title }}</a></address> 
+    <!-- post.author|title filter which used for captitalize the first letter of author -->
+    <div>
+        Last updated on <time datetime="">{{ post.date|date:"d M Y" }} </time>
+    </div>
+</article>
+</section>
+
+
+
+<main>
+{{ post.content|linebreaks }}
+
+</main>
+
+<section id="comments">
+    <ul>
+        {% for comment in comments %}
+        <li>
+            <h2>{{ comment.user_name }}</h2>
+            <p>{{ comment.text|linebreaks }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+
+<section id="comment-form">
+    <h2>Your Comment</h2>
+    <form action="{% url 'post_view' post.slug %}" method="POST">
+        {% csrf_token %}
+        {% for form_field in comment_form %}
+        <div class="form-control {% if form_field.errors %}invalid{% endif %}">
+            {{ form_field.label_tag }}
+            {{ form_field }}
+            {% if form_field.errors %}
+            <!-- <ul class="errorlist">
+                {% for error in form_field.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul> -->
+        {% endif %}
+        </div>
+        {% endfor %}
+            <button>Save Comment</button>
+    </form>
+</section>
+   
+
+{% endblock content %}
